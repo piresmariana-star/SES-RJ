@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SES-RJ – Plano de Estudos | Checklist + Revisão Espaçada</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #273449;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --primary: #14b8a6;
+    --primary-dark: #0d9488;
+    --alta: #ef4444;
+    --media: #f59e0b;
+    --baixa: #22c55e;
+    --border: #334155;
+    --warn: #fbbf24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+    padding-bottom: 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #0d9488, #0f172a);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+
+  header h1 { font-size: 1.8rem; margin-bottom: 8px; color: #fff; }
+  header p { color: #cbd5e1; font-size: 0.95rem; }
+
+  /* ===== ABAS ===== */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: var(--card);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(20,184,166,0.3);
+  }
+
+  .tab-badge {
+    background: var(--alta);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .tab-badge.hidden { display: none; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== DASHBOARD ===== */
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .stat-card .num { font-size: 2rem; font-weight: bold; color: var(--primary); }
+  .stat-card .num.warn { color: var(--warn); }
+  .stat-card .num.danger { color: var(--alta); }
+  .stat-card .label { font-size: 0.85rem; color: var(--muted); margin-top: 5px; }
+
+  .progress-bar {
+    width: 100%; height: 12px; background: var(--card2);
+    border-radius: 6px; overflow: hidden; margin-top: 10px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #22d3ee);
+    width: 0%; transition: width 0.4s ease;
+  }
+
+  /* ===== CONTROLES ===== */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 25px; justify-content: center;
+  }
+
+  .controls button {
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); padding: 10px 16px;
+    border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .controls button:hover {
+    background: var(--primary-dark); border-color: var(--primary);
+  }
+
+  .controls button.active {
+    background: var(--primary); border-color: var(--primary); color: #fff;
+  }
+
+  /* ===== ESPECIALIDADES ===== */
+  .especialidade {
+    background: var(--card); border-radius: 14px;
+    margin-bottom: 18px; border: 1px solid var(--border); overflow: hidden;
+  }
+
+  .esp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; cursor: pointer; background: var(--card2);
+    transition: background 0.2s; flex-wrap: wrap; gap: 10px;
+  }
+
+  .esp-header:hover { background: #2d3b52; }
+
+  .esp-title {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 600; font-size: 1.05rem;
+  }
+
+  .priority-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .priority-dot.alta { background: var(--alta); box-shadow: 0 0 8px var(--alta); }
+  .priority-dot.media { background: var(--media); box-shadow: 0 0 8px var(--media); }
+  .priority-dot.baixa { background: var(--baixa); box-shadow: 0 0 8px var(--baixa); }
+
+  .esp-meta {
+    display: flex; align-items: center; gap: 15px;
+    font-size: 0.85rem; color: var(--muted);
+  }
+
+  .esp-progress {
+    width: 100px; height: 6px; background: #0f172a;
+    border-radius: 3px; overflow: hidden;
+  }
+
+  .esp-progress-fill {
+    height: 100%; background: var(--primary); width: 0%;
+    transition: width 0.3s;
+  }
+
+  .esp-body { display: none; padding: 10px 20px 20px; }
+  .esp-body.open { display: block; }
+
+  /* ===== TEMAS ===== */
+  .tema {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+    background: #172033; border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .tema:hover { background: #1c2942; }
+  .tema.done { opacity: 0.6; border-left-color: var(--baixa); }
+  .tema.done .tema-nome { text-decoration: line-through; color: var(--muted); }
+
+  .tema input[type="checkbox"] {
+    margin-top: 4px; width: 18px; height: 18px;
+    accent-color: var(--primary); cursor: pointer; flex-shrink: 0;
+  }
+
+  .tema-info { flex: 1; min-width: 0; }
+  .tema-nome { font-size: 0.95rem; margin-bottom: 4px; }
+
+  .tema-detalhes {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    font-size: 0.75rem; color: var(--muted); align-items: center;
+  }
+
+  .badge {
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600;
+  }
+
+  .badge.alta { background: rgba(239,68,68,0.2); color: #fca5a5; }
+  .badge.media { background: rgba(245,158,11,0.2); color: #fcd34d; }
+  .badge.baixa { background: rgba(34,197,94,0.2); color: #86efac; }
+
+  .revisao-select {
+    background: #0f172a; color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 3px 6px; font-size: 0.75rem; cursor: pointer;
+  }
+
+  .revisao-info { font-size: 0.7rem; color: var(--muted); }
+  .revisao-info.vencida { color: #fca5a5; font-weight: 600; }
+
+  /* ===== ABA REVISÕES ===== */
+  .revisao-card {
+    background: var(--card); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 12px;
+    border-left: 4px solid var(--warn);
+    display: flex; flex-direction: column; gap: 10px;
+    transition: all 0.2s;
+  }
+
+  .revisao-card.vencida { border-left-color: var(--alta); }
+  .revisao-card.hoje { border-left-color: var(--warn); }
+
+  .revisao-card:hover { background: var(--card2); transform: translateX(3px); }
+
+  .revisao-top {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  }
+
+  .revisao-titulo { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+
+  .revisao-sub {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+
+  .revisao-data {
+    font-size: 0.8rem; padding: 3px 10px;
+    border-radius: 6px; font-weight: 600; white-space: nowrap;
+  }
+
+  .revisao-data.vencida { background: rgba(239,68,68,0.2); color: #fca5a5; }
+  .revisao-data.hoje { background: rgba(251,191,36,0.2); color: #fcd34d; }
+
+  .revisao-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn-acao {
+    padding: 8px 14px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-concluir { background: var(--primary); color: #fff; }
+  .btn-concluir:hover { background: var(--primary-dark); }
+
+  .btn-reiniciar {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-reiniciar:hover {
+    background: rgba(239,68,68,0.1);
+    color: #fca5a5; border-color: var(--alta);
+  }
+
+  .vazio {
+    text-align: center; padding: 60px 20px; color: var(--muted);
+  }
+
+  .vazio .emoji { font-size: 3rem; margin-bottom: 15px; display: block; }
+  .vazio h2 { color: var(--text); margin-bottom: 8px; font-size: 1.3rem; }
+
+  /* ===== LEGENDA ===== */
+  .legenda {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    justify-content: center; margin-bottom: 20px;
+    font-size: 0.85rem; color: var(--muted);
+  }
+
+  .legenda span { display: flex; align-items: center; gap: 6px; }
+
+  footer {
+    text-align: center; margin-top: 40px; padding: 20px;
+    color: var(--muted); font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .esp-header { flex-direction: column; align-items: flex-start; }
+    .esp-meta { width: 100%; justify-content: space-between; }
+    .tab-btn { font-size: 0.85rem; padding: 10px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 SES-RJ – Plano de Estudos</h1>
+  <p>Checklist por especialidade + Revisão Espaçada (1d → 7d → 30d → 90d)</p>
+  <p style="margin-top:6px; font-size:0.8rem; color:#94a3b8;">Baseado no Guia Estatístico SES-RJ (2017–2024)</p>
+</header>
+
+<!-- ===== ABAS ===== -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="checklist" onclick="mudarAba('checklist')">
+    📋 Checklist
+  </button>
+  <button class="tab-btn" data-tab="revisoes" onclick="mudarAba('revisoes')">
+    🔔 Revisões do Dia
+    <span class="tab-badge hidden" id="tabBadgeRevisoes">0</span>
+  </button>
+</div>
+
+<!-- ===== ABA: CHECKLIST ===== -->
+<div class="tab-content active" id="tab-checklist">
+
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="num" id="totalTemas">0</div>
+      <div class="label">Temas Totais</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="concluidos">0</div>
+      <div class="label">Concluídos</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="pendentes">0</div>
+      <div class="label">Pendentes</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="progressoPct">0%</div>
+      <div class="label">Progresso Geral</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressoFill"></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="filtrar('todas')" class="active" id="btn-todas">Todas</button>
+    <button onclick="filtrar('alta')" id="btn-alta">🔴 Alta</button>
+    <button onclick="filtrar('media')" id="btn-media">🟡 Média</button>
+    <button onclick="filtrar('baixa')" id="btn-baixa">🟢 Baixa</button>
+    <button onclick="expandirTodas()">📂 Expandir Tudo</button>
+    <button onclick="recolherTodas()">📁 Recolher Tudo</button>
+    <button onclick="resetar()" style="background:#7f1d1d; border-color:#991b1b;">🗑️ Resetar</button>
+  </div>
+
+  <div class="legenda">
+    <span><span class="priority-dot alta"></span> Alta prioridade (mais cobrado)</span>
+    <span><span class="priority-dot media"></span> Média prioridade</span>
+    <span><span class="priority-dot baixa"></span> Baixa prioridade</span>
+  </div>
+
+  <div id="conteudo"></div>
+</div>
+
+<!-- ===== ABA: REVISÕES DO DIA ===== -->
+<div class="tab-content" id="tab-revisoes">
+  <div class="dashboard" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+    <div class="stat-card">
+      <div class="num danger" id="totalVencidas">0</div>
+      <div class="label">🔴 Vencidas</div>
+    </div>
+    <div class="stat-card">
+      <div class="num warn" id="totalHoje">0</div>
+      <div class="label">🟡 Para Hoje</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="totalAgendadas">0</div>
+      <div class="label">📅 Agendadas</div>
+    </div>
+  </div>
+
+  <div id="listaRevisoes"></div>
+</div>
+
+<footer>
+  <p>💡 Dica: use o seletor de revisão ao lado de cada tema para agendar 1d, 7d, 30d ou 90d.</p>
+  <p style="margin-top:6px;">Progresso salvo automaticamente no seu navegador.</p>
+</footer>
+
+<script>
+/* ============================================================
+   DADOS DAS ESPECIALIDADES E TEMAS (baseado no Guia SES-RJ)
+   ============================================================ */
+const dados = [
+  { nome: "Pediatria", incidencia: "14,19%", questoes: 88, prioridade: "alta",
+    temas: ["Imunizações","Febre Reumática","Cuidados Neonatais","Doenças Exantemáticas","Aleitamento Materno","Infecções Congênitas","Obesidade Infantil e na Adolescência","Puberdade","Desenvolvimento Neuropsicomotor (DNPM)","Icterícia e Sepse Neonatal"] },
+  { nome: "Medicina Preventiva", incidencia: "13,55%", questoes: 84, prioridade: "alta",
+    temas: ["Medicina de Família e Comunidade","Pesquisa Epidemiológica e Medidas de Associação","Processo Saúde-Doença","Testes Diagnósticos","Princípios e Diretrizes do SUS","Ética Médica","Atenção Primária à Saúde no Brasil","Saúde do Idoso","Marcos Legais do SUS","Sistemas de Informação em Saúde"] },
+  { nome: "Cirurgia", incidencia: "12,10%", questoes: 75, prioridade: "alta",
+    temas: ["Vesícula e Vias Biliares","Urgências Abdominais","Cirurgia Infantil","Queimaduras e Trauma Elétrico","Cirurgia Bariátrica e Metabólica","Cirurgia Plástica","Trauma – Avaliação Inicial, Vias Aéreas e Trauma Torácico","Complicações Pós-Operatórias","Apendicite Aguda","Urologia","Hérnias da Parede Abdominal"] },
+  { nome: "Ginecologia", incidencia: "11,13%", questoes: 69, prioridade: "alta",
+    temas: ["Rastreamento do Câncer de Colo Uterino","Prolapsos de Órgãos Pélvicos","Assistência à Vítima de Violência Sexual","Endometriose","Amenorreia","Tumores Anexiais e Câncer de Ovário","Planejamento Familiar","Miomatose","Rastreamento do Câncer de Mama","Doenças Benignas da Mama"] },
+  { nome: "Endocrinologia", incidencia: "8,55%", questoes: 53, prioridade: "alta",
+    temas: ["Diabetes Mellitus Tipo 2","Tireotoxicose","Hipercalcemia","Introdução ao Diabetes Mellitus","Osteoporose e Doença Óssea de Paget","Obesidade e Síndrome Metabólica","Cirurgia Bariátrica e Metabólica","DM – Complicações Agudas","Feocromocitoma, Hiperaldosteronismo e Incidentaloma Adrenal","Hipotireoidismo"] },
+  { nome: "Obstetrícia", incidencia: "8,06%", questoes: 50, prioridade: "alta",
+    temas: ["Distúrbios Hipertensivos da Gestação","Sangramento da Primeira Metade","Pré-Natal","TPP – Prematuridade e Trabalho de Parto Prematuro","Sífilis na Gestação e Sífilis Congênita","Diabetes na Gestação","Sangramento da Segunda Metade","Partograma e Distocia","Hemorragia Pós-Parto (HPP)","Indução do Parto e Pós-Datismo"] },
+  { nome: "Gastroenterologia", incidencia: "6,13%", questoes: 38, prioridade: "media",
+    temas: ["Neoplasias de Estômago e Esôfago","Doença Ulcerosa Péptica, IBP e H. pylori","Pólipos e Neoplasias Intestinais","Doença Inflamatória Intestinal","Anatomofisiologia Gástrica, Gastrites, Gastroparesia e Dispepsia","Pancreatite Aguda e Crônica","Hemorragia Digestiva Alta Não Varicosa","Disfagia, Alterações Estruturais e Distúrbios Motores","DRGE, Esofagites e Corpo Estranho","Anatomia e Fisiologia do Pâncreas e Neoplasias Pancreáticas"] },
+  { nome: "Infectologia", incidencia: "5,48%", questoes: 34, prioridade: "media",
+    temas: ["Parasitoses","HIV","Infecção Hospitalar","Tuberculose","Pneumonias Bacterianas","Endocardite Bacteriana","Síndrome Febril Íctero-Hemorrágica","Arboviroses (Dengue, Chikungunya, Zika)","Meningites e Meningoencefalites","Raiva, Tétano, Mordedura e Arranhadura Animal"] },
+  { nome: "Nefrologia", incidencia: "3,39%", questoes: 21, prioridade: "media",
+    temas: ["Lesão Renal Aguda (LRA)","Doenças Glomerulares","Distúrbios Ácido-Base / Gasometria Arterial","Doença Renal Crônica – Pt. 2","Nefrolitíase","Distúrbios do Potássio","Disnatremias","Doença Renal Crônica – Pt. 1","ITU (Infecção do Trato Urinário)","Túbulo-Interstício Renal"] },
+  { nome: "Cardiologia", incidencia: "2,74%", questoes: 17, prioridade: "media",
+    temas: ["Hipertensão Arterial Sistêmica – Pt. 2","Valvopatias","Dislipidemia e Estratificação de Risco Cardiovascular","Semiologia Cardíaca","Fibrilação e Flutter Atrial","IAMCSST (Infarto Agudo do Miocárdio)","HAS – Pt. 3","Insuficiência Cardíaca – Pt. 1","Taquiarritmias","HAS – Pt. 1"] },
+  { nome: "Hepatologia", incidencia: "2,74%", questoes: 17, prioridade: "media",
+    temas: ["Hepatites Virais","Tumores Hepáticos","Introdução à Hepatologia e Icterícia Não Obstrutiva","Cirrose Hepática","Outras Hepatopatias","Complicações da Cirrose Hepática","Transplante Hepático e Hepatite Fulminante","Síndrome Hepatorenal e Hepatopulmonar"] },
+  { nome: "Hematologia", incidencia: "2,42%", questoes: 15, prioridade: "media",
+    temas: ["Anemias Microcíticas","Anemias Hemolíticas","Leucemias Agudas","Hemostasia II","Anemias Macrocíticas","Leucemias Crônicas, Linfomas, Mielodisplasias e Mieloproliferações","Introdução ao Estudo das Anemias","Gamopatias Monoclonais","Anemia Associada a Condições Não Hematológicas"] },
+  { nome: "Reumatologia", incidencia: "2,26%", questoes: 14, prioridade: "media",
+    temas: ["Doença Inflamatória do Tecido Conjuntivo II","Artrite Reumatoide","Artropatias Infecciosas","Espondiloartrite","Doenças Autoimunes do Tecido Conjuntivo","Vasculites","Artropatias Inflamatórias"] },
+  { nome: "Neurologia", incidencia: "1,94%", questoes: 12, prioridade: "media",
+    temas: ["Epilepsias","Cefaleias","Doenças Neuromusculares","Anatomia, Fisiologia e Semiologia Neurológica","Acidentes Vasculares Cerebrais (AVC)","Demências","Coma e Alterações da Consciência"] },
+  { nome: "Psiquiatria", incidencia: "1,77%", questoes: 11, prioridade: "baixa",
+    temas: ["Dependência Química","Psiquiatria Infantil","Transtornos de Humor","Intoxicações Exógenas","Transtornos de Ansiedade"] },
+  { nome: "Pneumologia", incidencia: "1,61%", questoes: 10, prioridade: "baixa",
+    temas: ["Derrame Pleural","Asma","DPOC","Neoplasias Pulmonares","Tromboembolismo Pulmonar (TEP)"] },
+  { nome: "Otorrinolaringologia", incidencia: "0,81%", questoes: 5, prioridade: "baixa",
+    temas: ["Infecções das Vias Aéreas Superiores – Pt. 1","Infecções das Vias Aéreas Superiores – Pt. 2","Infecções das Vias Aéreas Superiores – Pt. 3","Manejo dos Nódulos de Tireoide, Câncer de Tireoide e Tireoidectomia","Neoplasias Benignas e Malignas de Cabeça e Pescoço, Doenças Congênitas Cervicofaciais e Traqueostomia"] },
+  { nome: "Ortopedia", incidencia: "0,65%", questoes: 4, prioridade: "baixa",
+    temas: ["Doenças da Coluna Vertebral","Maus Tratos","Quadril Pediátrico","Coluna Pediátrica"] },
+  { nome: "Dermatologia", incidencia: "0,48%", questoes: 3, prioridade: "baixa",
+    temas: ["Dermatoses Infecciosas","Dermatoses Eczematosas"] },
+  { nome: "Oftalmologia", incidencia: "0,00%", questoes: 0, prioridade: "baixa",
+    temas: ["Nenhum tema cobrado no período (2017–2024)"] }
+];
+
+/* ============================================================
+   ESTADO E LOCALSTORAGE
+   ============================================================ */
+const STORAGE_KEY = "sesrj_estudos_v3";
+let estado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+function salvar() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+}
+
+function getTemaId(espIdx, temaIdx) {
+  return "esp" + espIdx + "_tema" + temaIdx;
+}
+
+function hojeISO() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+function addDias(dataISO, dias) {
+  const d = new Date(dataISO + "T00:00:00");
+  d.setDate(d.getDate() + dias);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+const ORDEM_CICLO = ["1d", "7d", "30d", "90d"];
+const DIAS_CICLO = { "1d": 1, "7d": 7, "30d": 30, "90d": 90 };
+
+/* ============================================================
+   NAVEGAÇÃO ENTRE ABAS
+   ============================================================ */
+function mudarAba(nome) {
+  document.querySelectorAll(".tab-btn").forEach(function(b) { b.classList.remove("active"); });
+  document.querySelectorAll(".tab-content").forEach(function(c) { c.classList.remove("active"); });
+  document.querySelector('.tab-btn[data-tab="' + nome + '"]').classList.add("active");
+  document.getElementById("tab-" + nome).classList.add("active");
+  if (nome === "revisoes") renderizarRevisoes();
+}
+
+/* ============================================================
+   RENDERIZAÇÃO DO CHECKLIST
+   ============================================================ */
+function renderizar() {
+  const container = document.getElementById("conteudo");
+  container.innerHTML = "";
+
+  dados.forEach(function(esp, espIdx) {
+    const espDiv = document.createElement("div");
+    espDiv.className = "especialidade";
+    espDiv.dataset.prioridade = esp.prioridade;
+
+    const header = document.createElement("div");
+    header.className = "esp-header";
+    header.onclick = function(e) {
+      if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+      espDiv.querySelector(".esp-body").classList.toggle("open");
+    };
+
+    const total = esp.temas.length;
+    const feitos = esp.temas.filter(function(_, i) {
+      return estado[getTemaId(espIdx, i)] && estado[getTemaId(espIdx, i)].done;
+    }).length;
+    const pct = total > 0 ? Math.round((feitos / total) * 100) : 0;
+
+    header.innerHTML =
+      '<div class="esp-title">' +
+        '<span class="priority-dot ' + esp.prioridade + '"></span>' +
+        esp.nome +
+      '</div>' +
+      '<div class="esp-meta">' +
+        '<span>📈 ' + esp.incidencia + ' (' + esp.questoes + ' questões)</span>' +
+        '<span>' + feitos + '/' + total + '</span>' +
+        '<div class="esp-progress"><div class="esp-progress-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>';
+
+    const body = document.createElement("div");
+    body.className = "esp-body";
+
+    esp.temas.forEach(function(tema, temaIdx) {
+      const id = getTemaId(espIdx, temaIdx);
+      const st = estado[id] || { done: false, ciclo: "", ultima: "", proxima: "" };
+
+      const temaDiv = document.createElement("div");
+      temaDiv.className = "tema" + (st.done ? " done" : "");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = st.done;
+      checkbox.onchange = function() {
+        estado[id] = estado[id] || {};
+        estado[id].done = checkbox.checked;
+        if (checkbox.checked && !estado[id].ultima) {
+          estado[id].ultima = hojeISO();
+          estado[id].ciclo = "1d";
+          estado[id].proxima = addDias(hojeISO(), 1);
+        }
+        salvar();
+        renderizar();
+        atualizarDashboard();
+        atualizarBadgeRevisoes();
+      };
+
+      const info = document.createElement("div");
+      info.className = "tema-info";
+
+      const nome = document.createElement("div");
+      nome.className = "tema-nome";
+      nome.textContent = tema;
+
+      const detalhes = document.createElement("div");
+      detalhes.className = "tema-detalhes";
+
+      const badge = document.createElement("span");
+      badge.className = "badge " + esp.prioridade;
+      badge.textContent = esp.prioridade === "alta" ? "🔴 Alta" : esp.prioridade === "media" ? "🟡 Média" : "🟢 Baixa";
+
+      const select = document.createElement("select");
+      select.className = "revisao-select";
+      select.innerHTML =
+        '<option value="">Revisão</option>' +
+        '<option value="1d"' + (st.ciclo === "1d" ? " selected" : "") + '>1 dia</option>' +
+        '<option value="7d"' + (st.ciclo === "7d" ? " selected" : "") + '>7 dias</option>' +
+        '<option value="30d"' + (st.ciclo === "30d" ? " selected" : "") + '>30 dias</option>' +
+        '<option value="90d"' + (st.ciclo === "90d" ? " selected" : "") + '>90 dias</option>';
+      select.onchange = function() {
+        estado[id] = estado[id] || {};
+        estado[id].ciclo = select.value;
+        estado[id].ultima = hojeISO();
+        estado[id].proxima = select.value ? addDias(hojeISO(), DIAS_CICLO[select.value]) : "";
+        salvar();
+        renderizar();
+        atualizarDashboard();
+        atualizarBadgeRevisoes();
+      };
+
+      detalhes.appendChild(badge);
+      detalhes.appendChild(select);
+
+      if (st.proxima) {
+        const revInfo = document.createElement("span");
+        revInfo.className = "revisao-info";
+        const hoje = hojeISO();
+        if (st.proxima < hoje) {
+          revInfo.classList.add("vencida");
+          revInfo.textContent = "🔔 Vencida (" + st.proxima + ")";
+        } else if (st.proxima === hoje) {
+          revInfo.classList.add("vencida");
+          revInfo.textContent = "🔔 Revisar hoje";
+        } else {
+          revInfo.textContent = "📅 Próxima: " + st.proxima;
+        }
+        detalhes.appendChild(revInfo);
+      }
+
+      info.appendChild(nome);
+      info.appendChild(detalhes);
+
+      temaDiv.appendChild(checkbox);
+      temaDiv.appendChild(info);
+      body.appendChild(temaDiv);
+    });
+
+    espDiv.appendChild(header);
+    espDiv.appendChild(body);
+    container.appendChild(espDiv);
+  });
+
+  atualizarDashboard();
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function atualizarDashboard() {
+  let total = 0, feitos = 0;
+  dados.forEach(function(esp, espIdx) {
+    esp.temas.forEach(function(_, temaIdx) {
+      total++;
+      const st = estado[getTemaId(espIdx, temaIdx)];
+      if (st && st.done) feitos++;
+    });
+  });
+  const pct = total > 0 ? Math.round((feitos / total) * 100) : 0;
+  document.getElementById("totalTemas").textContent = total;
+  document.getElementById("concluidos").textContent = feitos;
+  document.getElementById("pendentes").textContent = total - feitos;
+  document.getElementById("progressoPct").textContent = pct + "%";
+  document.getElementById("progressoFill").style.width = pct + "%";
+}
+
+/* ============================================================
+   ABA REVISÕES DO DIA
+   ============================================================ */
+function coletarRevisoes() {
+  const hoje = hojeISO();
+  const vencidas = [];
+  const paraHoje = [];
+  const agendadas = [];
+
+  dados.forEach(function(esp, espIdx) {
+    esp.temas.forEach(function(tema, temaIdx) {
+      const id = getTemaId(espIdx, temaIdx);
+      const st = estado[id];
+      if (!st || !st.proxima) return;
+      const item = { id: id, espIdx: espIdx, temaIdx: temaIdx, esp: esp, tema: tema, st: st };
+      if (st.proxima < hoje) vencidas.push(item);
+      else if (st.proxima === hoje) paraHoje.push(item);
+      else agendadas.push(item);
+    });
+  });
+
+  return { vencidas: vencidas, paraHoje: paraHoje, agendadas: agendadas };
+}
+
+function renderizarRevisoes() {
+  const container = document.getElementById("listaRevisoes");
+  const c = coletarRevisoes();
+
+  document.getElementById("totalVencidas").textContent = c.vencidas.length;
+  document.getElementById("totalHoje").textContent = c.paraHoje.length;
+  document.getElementById("totalAgendadas").textContent = c.agendadas.length;
+
+  container.innerHTML = "";
+
+  const todas = c.vencidas.concat(c.paraHoje);
+
+  if (todas.length === 0) {
+    container.innerHTML =
+      '<div class="vazio">' +
+        '<span class="emoji">🎉</span>' +
+        '<h2>Nenhuma revisão pendente!</h2>' +
+        '<p>Você está em dia. Continue estudando e agendando novas revisões.</p>' +
+      '</div>';
+    return;
+  }
+
+  todas.forEach(function(item) {
+    const card = document.createElement("div");
+    card.className = "revisao-card " + (item.st.proxima < hojeISO() ? "vencida" : "hoje");
+
+    const dataLabel = item.st.proxima < hojeISO()
+      ? "🔴 Vencida em " + item.st.proxima
+      : "🟡 Revisar hoje";
+
+    const cicloLabel = item.st.ciclo ? "Ciclo: " + item.st.ciclo : "Sem ciclo";
+
+    card.innerHTML =
+      '<div class="revisao-top">' +
+        '<div>' +
+          '<div class="revisao-titulo">' + item.tema + '</div>' +
+          '<div class="revisao-sub">' +
+            '<span class="badge ' + item.esp.prioridade + '">' +
+              (item.esp.prioridade === "alta" ? "🔴 Alta" : item.esp.prioridade === "media" ? "🟡 Média" : "🟢 Baixa") +
+            '</span>' +
+            '<span>📚 ' + item.esp.nome + '</span>' +
+            '<span>🔁 ' + cicloLabel + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="revisao-data ' + (item.st.proxima < hojeISO() ? "vencida" : "hoje") + '">' +
+          dataLabel +
+        '</div>' +
+      '</div>' +
+      '<div class="revisao-acoes">' +
+        '<button class="btn-acao btn-concluir" data-id="' + item.id + '" data-acao="concluir">' +
+          '✅ Concluir revisão (avançar ciclo)' +
+        '</button>' +
+        '<button class="btn-acao btn-reiniciar" data-id="' + item.id + '" data-acao="reiniciar">' +
+          '🔄 Reiniciar (voltar para 1d)' +
+        '</button>' +
+      '</div>';
+
+    container.appendChild(card);
+  });
+
+  // Eventos dos botões
+  container.querySelectorAll("button[data-acao]").forEach(function(btn) {
+    btn.onclick = function() {
+      const id = btn.dataset.id;
+      const acao = btn.dataset.acao;
+      if (acao === "concluir") concluirRevisao(id);
+      else if (acao === "reiniciar") reiniciarRevisao(id);
+    };
+  });
+}
+
+function concluirRevisao(id) {
+  const st = estado[id];
+  if (!st) return;
+  const idx = ORDEM_CICLO.indexOf(st.ciclo);
+  let proximoCiclo;
+  if (idx === -1 || idx === ORDEM_CICLO.length - 1) {
+    // Se já está no último ciclo (90d), mantém 90d
+    proximoCiclo = "90d";
+  } else {
+    proximoCiclo = ORDEM_CICLO[idx + 1];
+  }
+  st.ciclo = proximoCiclo;
+  st.ultima = hojeISO();
+  st.proxima = addDias(hojeISO(), DIAS_CICLO[proximoCiclo]);
+  salvar();
+  renderizarRevisoes();
+  renderizar();
+  atualizarDashboard();
+  atualizarBadgeRevisoes();
+}
+
+function reiniciarRevisao(id) {
+  const st = estado[id];
+  if (!st) return;
+  st.ciclo = "1d";
+  st.ultima = hojeISO();
+  st.proxima = addDias(hojeISO(), 1);
+  salvar();
+  renderizarRevisoes();
+  renderizar();
+  atualizarDashboard();
+  atualizarBadgeRevisoes();
+}
+
+/* ============================================================
+   BADGE DA ABA REVISÕES
+   ============================================================ */
+function atualizarBadgeRevisoes() {
+  const c = coletarRevisoes();
+  const total = c.vencidas.length + c.paraHoje.length;
+  const badge = document.getElementById("tabBadgeRevisoes");
+  if (total > 0) {
+    badge.textContent = total;
+    badge.classList.remove("hidden");
+  } else {
+    badge.classList.add("hidden");
+  }
+}
+
+/* ============================================================
+   FILTROS
+   ============================================================ */
+function filtrar(tipo) {
+  document.querySelectorAll(".controls button").forEach(function(b) { b.classList.remove("active"); });
+  document.getElementById("btn-" + tipo).classList.add("active");
+
+  document.querySelectorAll(".especialidade").forEach(function(esp) {
+    if (tipo === "todas") {
+      esp.style.display = "block";
+    } else {
+      esp.style.display = esp.dataset.prioridade === tipo ? "block" : "none";
+    }
+  });
+}
+
+function expandirTodas() {
+  document.querySelectorAll(".esp-body").forEach(function(b) { b.classList.add("open"); });
+}
+
+function recolherTodas() {
+  document.querySelectorAll(".esp-body").forEach(function(b) { b.classList.remove("open"); });
+}
+
+function resetar() {
+  if (confirm("Tem certeza que deseja apagar TODO o progresso?")) {
+    estado = {};
+    salvar();
+    renderizar();
+    renderizarRevisoes();
+    atualizarBadgeRevisoes();
+  }
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+renderizar();
+atualizarBadgeRevisoes();
+</script>
+</body>
+</html>
